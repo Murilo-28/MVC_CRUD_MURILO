@@ -1,0 +1,36 @@
+﻿@model IEnumerable<WebCRUDMVCSQL.Models.Pedido>
+
+@{
+    ViewData["Title"] = "Pedidos";
+}
+
+<h1>Pedidos</h1>
+<p>
+    <a asp-action="Create">Novo Pedido</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Valor Total</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(m => item.Cliente.Nome)</td>
+                <td>@Html.DisplayFor(m => item.Produto.Nome)</td>
+                <td>@Html.DisplayFor(m => item.Quantidade)</td>
+                <td>@Html.DisplayFor(m => item.Preco)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
