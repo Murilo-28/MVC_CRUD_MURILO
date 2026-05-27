@@ -11,6 +11,8 @@ builder.Services.AddDbContext<Contexto>
     ("Data Source=TQR220391\\SQLEXPRESS;Initial Catalog=CRUD_MVC_SQL_CANAL_DEV;Integrated Security=False;User ID=tds;Password=tds123;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False"));
 
 var app = builder.Build();
+app.UseDeveloperExceptionPage();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

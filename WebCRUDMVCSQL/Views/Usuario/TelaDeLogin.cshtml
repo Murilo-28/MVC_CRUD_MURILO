@@ -1,9 +1,10 @@
 ﻿@model WebCRUDMVCSQL.Models.Usuario
 
 @{
-    ViewData["Title"] = "Login";
+    ViewBag.Title = "Trocar Senha";
+    ViewBag.HideMenu = true;
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
-
 <h1>Login</h1>
 <div class="col-md-4">
     <form asp-action="TelaDeLogin" method="post">

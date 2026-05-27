@@ -2,9 +2,8 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebCRUDMVCSQL.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using WebCRUDMVCSQL.Models;
-using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebCRUDMVCSQL.Controllers
 {
@@ -28,25 +27,31 @@ namespace WebCRUDMVCSQL.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var clientes = await _context.Client.ToListAsync();
-            var produtos = await _context.Produto.ToListAsync();
-
-            ViewBag.Clientes = new SelectList(clientes, "Id", "Nome");
-            ViewBag.Produtos = new SelectList(produtos, "Id", "Nome");
-            ViewBag.ProdutosJson = JsonSerializer.Serialize(produtos.Select(p => new
-            {
-                id = p.Id,
-                nome = p.Nome,
-                preco = p.Preco
-            }));
-
-            return View();
+            await CarregarViewBags();
+            return View(new Pedido());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdCliente,IdProduto,Quantidade,Preco")] Pedido pedido)
+        public async Task<IActionResult> Create(
+            [Bind("IdCliente,IdProduto,Quantidade,Preco")] Pedido pedido,
+            string acao)
         {
+            if (acao == "buscarPreco")
+            {
+                if (pedido.IdProduto > 0)
+                {
+                    var produto = await _context.Produto.FindAsync(pedido.IdProduto);
+                    if (produto != null)
+                        pedido.Preco = (decimal)produto.Preco;
+                }
+
+                ModelState.Clear();
+
+                await CarregarViewBags(pedido.IdCliente, pedido.IdProduto);
+                return View(pedido);
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(pedido);
@@ -54,18 +59,7 @@ namespace WebCRUDMVCSQL.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var clientes = await _context.Client.ToListAsync();
-            var produtos = await _context.Produto.ToListAsync();
-
-            ViewBag.Clientes = new SelectList(clientes, "Id", "Nome");
-            ViewBag.Produtos = new SelectList(produtos, "Id", "Nome");
-            ViewBag.ProdutosJson = JsonSerializer.Serialize(produtos.Select(p => new
-            {
-                id = p.Id,
-                nome = p.Nome,
-                preco = p.Preco
-            }));
-
+            await CarregarViewBags(pedido.IdCliente, pedido.IdProduto);
             return View(pedido);
         }
 
@@ -73,10 +67,18 @@ namespace WebCRUDMVCSQL.Controllers
         {
             var pedido = _context.Pedido.Find(id);
             if (pedido == null)
-            {
                 return NotFound();
-            }
             return View(pedido);
         }
+
+        // Método auxiliar para evitar repetição
+        private async Task CarregarViewBags(int idCliente = 0, int idProduto = 0)
+        {
+            var clientes = await _context.Client.ToListAsync();
+            var produtos = await _context.Produto.ToListAsync();
+            ViewBag.Clientes = new SelectList(clientes, "Id", "Nome", idCliente);
+            ViewBag.Produtos = new SelectList(produtos, "Id", "Nome", idProduto);
+        }
+
     }
 }

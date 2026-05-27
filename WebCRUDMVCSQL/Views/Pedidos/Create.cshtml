@@ -7,86 +7,44 @@
 <h1>Criando Pedido</h1>
 <div class="col-md-4">
     <form asp-action="Create" method="post">
-
         <div class="form-group">
             <label asp-for="IdCliente">Cliente</label>
             <select asp-for="IdCliente" class="form-control"
                     asp-items="@(ViewBag.Clientes as SelectList)">
-                <option value="">-- Selecione um Cliente --</option>
+                <option value="">Escolha um cliente</option>
             </select>
         </div>
 
         <div class="form-group">
             <label asp-for="IdProduto">Produto</label>
             <select asp-for="IdProduto" class="form-control"
-                    asp-items="@(ViewBag.Produtos as SelectList)"
-                    id="selectProduto">
-                <option value="">-- Selecione um Produto --</option>
+                    asp-items="@(ViewBag.Produtos as SelectList)">
+                <option value="">Escolha um produto</option>
             </select>
+
+            <div class="form-group">
+                <label asp-for="Quantidade"></label>
+                <input asp-for="Quantidade" class="form-control" min="1" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Preco"></label>
+                <input asp-for="Preco" class="form-control" readonly />
+            </div>
+
+            <!-- Botão para buscar o preço -->
+            <button type="submit" name="acao" value="buscarPreco"
+                    class="btn btn-secondary mt-1">
+                Buscar Preço
+            </button>
         </div>
 
-        <!-- Aparece após selecionar o produto -->
-        <div id="infoProduto" class="alert alert-info" style="display:none;">
-            <strong>Produto:</strong> <span id="nomeProduto"></span><br />
-            <strong>Preço unitário:</strong> R$ <span id="precoProduto"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Quantidade"></label>
-            <input asp-for="Quantidade" class="form-control" id="quantidade" min="1" />
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Preco">Valor Total</label>
-            <input asp-for="Preco" class="form-control" id="precoTotal" readonly />
-        </div>
-
-        <div class="form-group mt-2">
-            <input type="submit" value="Criar Pedido" class="btn btn-primary" />
-        </div>
-
+        @if (Model != null && Model.Preco > 0)
+        {
+            <div class="form-group mt-2">
+                <input type="submit" name="acao" value="Criar Pedido"
+                       class="btn btn-primary" />
+            </div>
+        }
     </form>
 </div>
-
-@section Scripts {
-    <script>
-        // Dados dos produtos vindos do servidor
-        const produtos = @Html.Raw(ViewBag.ProdutosJson);
-
-        const selectProduto = document.getElementById("selectProduto");
-        const quantidade = document.getElementById("quantidade");
-        const infoProduto = document.getElementById("infoProduto");
-        const nomeProduto = document.getElementById("nomeProduto");
-        const precoProduto = document.getElementById("precoProduto");
-        const precoTotal = document.getElementById("precoTotal");
-
-        // Quando trocar o produto
-        selectProduto.addEventListener("change", function () {
-            const id = parseInt(this.value);
-            const produto = produtos.find(p => p.id === id);
-
-            if (produto) {
-                nomeProduto.textContent = produto.nome;
-                precoProduto.textContent = produto.preco.toFixed(2);
-                infoProduto.style.display = "block";
-                calcularTotal();
-            } else {
-                infoProduto.style.display = "none";
-                precoTotal.value = "";
-            }
-        });
-
-        // Quando mudar a quantidade
-        quantidade.addEventListener("input", calcularTotal);
-
-        function calcularTotal() {
-            const id = parseInt(selectProduto.value);
-            const produto = produtos.find(p => p.id === id);
-            const qtd = parseInt(quantidade.value) || 0;
-
-            if (produto && qtd > 0) {
-                precoTotal.value = (produto.preco * qtd).toFixed(2);
-            }
-        }
-    </script>
-}
