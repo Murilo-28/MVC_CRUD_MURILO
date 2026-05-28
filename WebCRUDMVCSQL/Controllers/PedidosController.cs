@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebCRUDMVCSQL.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using WebCRUDMVCSQL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebCRUDMVCSQL.Controllers
@@ -39,15 +37,13 @@ namespace WebCRUDMVCSQL.Controllers
         {
             if (acao == "buscarPreco")
             {
-                if (pedido.IdProduto > 0)
+                if (pedido.IdProduto > 0 && pedido.Quantidade > 0)
                 {
                     var produto = await _context.Produto.FindAsync(pedido.IdProduto);
                     if (produto != null)
-                        pedido.Preco = (decimal)produto.Preco;
+                        pedido.Preco = (decimal)produto.Preco * pedido.Quantidade;
                 }
-
                 ModelState.Clear();
-
                 await CarregarViewBags(pedido.IdCliente, pedido.IdProduto);
                 return View(pedido);
             }
@@ -71,7 +67,34 @@ namespace WebCRUDMVCSQL.Controllers
             return View(pedido);
         }
 
-        // Método auxiliar para evitar repetição
+        public async Task<IActionResult> Delete(int id)
+        {
+            var pedido = await _context.Pedido
+                .Include(p => p.Cliente)
+                .Include(p => p.Produto)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (pedido == null)
+                return NotFound();
+
+            return View(pedido);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmado(int id)
+        {
+            var pedido = await _context.Pedido.FindAsync(id);
+
+            if (pedido != null)
+            {
+                _context.Pedido.Remove(pedido);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         private async Task CarregarViewBags(int idCliente = 0, int idProduto = 0)
         {
             var clientes = await _context.Client.ToListAsync();
@@ -79,6 +102,5 @@ namespace WebCRUDMVCSQL.Controllers
             ViewBag.Clientes = new SelectList(clientes, "Id", "Nome", idCliente);
             ViewBag.Produtos = new SelectList(produtos, "Id", "Nome", idProduto);
         }
-
     }
 }
