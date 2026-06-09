@@ -7,16 +7,25 @@
    
 </style>
 
-<h1>View</h1>
+<h1>Cliente</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Novo cliente</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.Telefone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.Idade)
             </th>
             <th></th>
         </tr>

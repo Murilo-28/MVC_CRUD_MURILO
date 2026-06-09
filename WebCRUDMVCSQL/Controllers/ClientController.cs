@@ -54,7 +54,7 @@ namespace WebCRUDMVCSQL.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Email,idade,Telefone")] Client cliente)
+        public async Task<IActionResult> Create([Bind("Id,Nome,Email,Idade,Telefone")] Client cliente)
         {
             if (ModelState.IsValid)
             {

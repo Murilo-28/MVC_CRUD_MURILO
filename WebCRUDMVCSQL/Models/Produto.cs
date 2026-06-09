@@ -11,6 +11,8 @@ namespace WebCRUDMVCSQL.Models
         public int Id { get; set; }
 
         [Column("Nome")]
+        [Required(ErrorMessage = "Nome é obrigatório")]
+        [RegularExpression(@"^[a-zA-ZÀ-ÿ\s]+$", ErrorMessage = "Nome deve conter apenas letras")]
         [Display(Name = "Nome")]
         public string Nome { get; set; }
 

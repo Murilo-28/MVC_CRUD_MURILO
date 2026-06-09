@@ -1,19 +1,25 @@
 ﻿@model IEnumerable<WebCRUDMVCSQL.Models.Produto>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Produto";
 }
 
-<h1>Index</h1>
+<h1>Produtos</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Novo produto</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.Preco)
+            </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.Peso)
             </th>
             <th></th>
         </tr>
