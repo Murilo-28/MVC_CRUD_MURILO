@@ -32,7 +32,7 @@ namespace WebCRUDMVCSQL.Models
 
         [Column("Idade")]
         [Required(ErrorMessage = "Idade é obrigatória")]
-        [Range(0, 150, ErrorMessage = "Idade deve ser entre 0 e 150")]
+        [Range(0, 150, ErrorMessage = "Idade deve ser entre 0 e 100")]
         [Display(Name = "Idade")]
         public int Idade { get; set; }
     }
