@@ -26,7 +26,14 @@ namespace WebCRUDMVCSQL.Models
         [Display(Name = "Preço")]
         public decimal Preco { get; set; }
 
-        // Navegação
+        [NotMapped]
+        [Display(Name = "Cliente")]
+        public string? NomeCliente { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Produto")]
+        public string? NomeProduto { get; set; }
+
         [ForeignKey("IdCliente")]
         public Client? Cliente { get; set; }
 

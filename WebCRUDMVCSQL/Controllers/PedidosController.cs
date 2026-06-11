@@ -25,37 +25,55 @@ namespace WebCRUDMVCSQL.Controllers
 
         public async Task<IActionResult> Create()
         {
-            await CarregarViewBags();
             return View(new Pedido());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind("IdCliente,IdProduto,Quantidade,Preco")] Pedido pedido,
+            [Bind("NomeCliente,NomeProduto,Quantidade,Preco")] Pedido pedido,
             string acao)
-        {
+        { 
+            var cliente = await _context.Client
+                .FirstOrDefaultAsync(c => c.Nome == pedido.NomeCliente);
+
+            var produto = await _context.Produto
+                .FirstOrDefaultAsync(p => p.Nome == pedido.NomeProduto);
+
             if (acao == "buscarPreco")
             {
-                if (pedido.IdProduto > 0 && pedido.Quantidade > 0)
+                if (produto != null && pedido.Quantidade > 0)
                 {
-                    var produto = await _context.Produto.FindAsync(pedido.IdProduto);
-                    if (produto != null)
-                        pedido.Preco = (decimal)produto.Preco * pedido.Quantidade;
+                    pedido.Preco = (decimal)produto.Preco * pedido.Quantidade;
                 }
+                else
+                {
+                    ModelState.AddModelError("NomeProduto", "Produto não encontrado.");
+                }
+
                 ModelState.Clear();
-                await CarregarViewBags(pedido.IdCliente, pedido.IdProduto);
                 return View(pedido);
             }
 
+            if (cliente == null)
+                ModelState.AddModelError("NomeCliente", "Cliente não encontrado.");
+
+            if (produto == null)
+                ModelState.AddModelError("NomeProduto", "Produto não encontrado.");
+
             if (ModelState.IsValid)
             {
+                pedido.IdCliente = cliente!.Id;
+                pedido.IdProduto = produto!.Id;
+
+                pedido.Cliente = null;
+                pedido.Produto = null;
+
                 _context.Add(pedido);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            await CarregarViewBags(pedido.IdCliente, pedido.IdProduto);
             return View(pedido);
         }
 
@@ -93,14 +111,6 @@ namespace WebCRUDMVCSQL.Controllers
             }
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private async Task CarregarViewBags(int idCliente = 0, int idProduto = 0)
-        {
-            var clientes = await _context.Client.ToListAsync();
-            var produtos = await _context.Produto.ToListAsync();
-            ViewBag.Clientes = new SelectList(clientes, "Id", "Nome", idCliente);
-            ViewBag.Produtos = new SelectList(produtos, "Id", "Nome", idProduto);
         }
     }
 }

@@ -8,19 +8,13 @@
 <div class="col-md-4">
     <form asp-action="Create" method="post">
         <div class="form-group">
-            <label asp-for="IdCliente">Cliente</label>
-            <select asp-for="IdCliente" class="form-control"
-                    asp-items="@(ViewBag.Clientes as SelectList)">
-                <option value="">Escolha um cliente</option>
-            </select>
+            <label asp-for="NomeCliente">Cliente</label>
+            <input asp-for="NomeCliente" class="form-control" placeholder="Digite o nome do cliente" />
         </div>
 
         <div class="form-group">
-            <label asp-for="IdProduto">Produto</label>
-            <select asp-for="IdProduto" class="form-control"
-                    asp-items="@(ViewBag.Produtos as SelectList)">
-                <option value="">Escolha um produto</option>
-            </select>
+            <label asp-for="NomeProduto">Produto</label>
+            <input asp-for="NomeProduto" class="form-control" placeholder="Digite o nome do produto" />
 
             <div class="form-group">
                 <label asp-for="Quantidade"></label>
@@ -32,8 +26,7 @@
                 <input asp-for="Preco" class="form-control" readonly />
             </div>
 
-            <button type="submit" name="acao" value="buscarPreco"
-                    class="btn btn-secondary mt-1">
+            <button type="submit" name="acao" value="buscarPreco" class="btn btn-secondary mt-1">
                 Buscar Preço
             </button>
         </div>
@@ -41,8 +34,7 @@
         @if (Model != null && Model.Preco > 0)
         {
             <div class="form-group mt-2">
-                <input type="submit" name="acao" value="Criar Pedido"
-                       class="btn btn-primary" />
+                <input type="submit" name="acao" value="Criar Pedido" class="btn btn-primary" />
             </div>
         }
     </form>
